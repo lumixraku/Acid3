@@ -512,6 +512,7 @@ var tests = [
 
   // bucket 1: DOM Traversal, DOM Range, HTTP
   // DOM Traversal
+  // 主要测试  createNodeIterator  createTreeWalker 的支持
   function() {
     // test 1: NodeFilters and Exceptions
     var doc = getTestDocument(); // looks like <!DOCTYPE><html><head><title/><\head><body/><\html>     (the '\'s are to avoid validation errors)
@@ -519,6 +520,8 @@ var tests = [
     var exception = "Roses";
     var test = function(node) {
       iteration += 1;
+
+      //凡是对于check中执行的nextNode()  都需要抛出指定的异常  也即是上面定义的对象exception
       switch (iteration) {
         case 1:
         case 3:
@@ -541,6 +544,10 @@ var tests = [
           throw 0;
       };
     };
+
+    //非常严格的方式来检查method的存在和执行
+    //只有对应的method存在 且执行后没有其他异常
+    //那么就认为这个方法存在
     var check = function(o, method) {
       var ok = false;
       try {
@@ -552,7 +559,10 @@ var tests = [
       assert(ok, "method " + o + "." + method + "() didn't forward exception");
     };
     var i = doc.createNodeIterator(doc.documentElement, 0xFFFFFFFF, test, true);
-    check(i, "nextNode"); // 1
+    check(i, "nextNode"); // 1   //若i.nextNode()存在  则调用i.nextNode()
+    //由于这个test第一次执行  iteration是1  会抛出异常  所以这个nextNode()实际上没有执行成功
+
+    //虽然这里是第二次执行nextNode()  但是由于第一次nextNode没有执行成功  这里才是第一次正确执行
     assertEquals(i.nextNode(), doc.documentElement, "i.nextNode() didn't return the right node"); // 2
     check(i, "previousNode"); // 3
     var w = document.createTreeWalker(doc.documentElement, 0xFFFFFFFF, test, true);
