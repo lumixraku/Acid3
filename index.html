@@ -1202,6 +1202,18 @@ var tests = [
   },
   function() {
     // test 18: nodeType (this test also relies on accurate parsing of the document)
+    // Node.ELEMENT_NODE（1）
+    // Node.ATTRIBUTE_NODE (2)
+    // Node.TEXT_NODE (3)
+    // Node.CDATA_SECTION_NODE(4)
+    // Node.ENTITY_REFERENCE_NODE(5)
+    // Node.ENTITY_NODE (6)
+    // Node.PROCESSING_INSTRUCTION_NODE (7)
+    // Node.COMMENT_NODE (8)
+    // Node.DOCUMENT_NODE(9)
+    // Node.DOCUMENT_TYPE_NODE(10)
+    // Node.DOCUMENT_FRAGMENT_NODE(11)
+    // Node.NOTATION_NODE(12)
     assertEquals(document.nodeType, 9, "document nodeType wrong");
     assertEquals(document.documentElement.nodeType, 1, "element nodeType wrong");
     // COMMENTED OUT FOR 2011 UPDATE - turns out instead of dropping Attr entirely, as Acid3 originally expected, the API is just being refactored
@@ -1212,7 +1224,7 @@ var tests = [
     return 2;
   },
   function() {
-    // test 19: value of constants
+    // test 19: value of constants  对常量值得检测
     var e = null;
     try {
       document.body.appendChild(document.documentElement);
@@ -2811,11 +2823,12 @@ var tests = [
     fail("Unpaired surrogate handled wrongly (input was '" + before + "', output was '" + after + "')");
   },
   function() {
+    // 这里的是在65出现的变量  kungFuDeathGrip是一个p元素  其中有7个iframe元素
     // test 69: check that the support files loaded -- preparation for the rest of the tests in this bucket
     assert(!(kungFuDeathGrip == null), "kungFuDeathGrip was null");
     assert(!(kungFuDeathGrip.title == null), "kungFuDeathGrip.title was null");
     if (kungFuDeathGrip.title.length < 7)
-      return "retry";
+      return "retry";  //
     assert(!(kungFuDeathGrip.firstChild == null), "kungFuDeathGrip.firstChild was null");
     assert(!(kungFuDeathGrip.firstChild.contentDocument == null), "kungFuDeathGrip.firstChild.contentDocument was null");
     assert(!(kungFuDeathGrip.firstChild.contentDocument.getElementsByTagName == null), "kungFuDeathGrip.firstChild.contentDocument.getElementsByTagName was null");
@@ -3510,9 +3523,11 @@ var tests = [
     // this is to prevent the 'retry' from failing the second time since by
     // then the kungFuDeathGrip has been nullified, if we do it first)
     // first, check that the linktest is loaded
-    var a = document.links[1];
+    var a = document.links[1]; //links 属性返回一个包含文档中所有具有 href 属性值的 <area> 元素 <a> 元素的集合。
     assert(!(a == null), "linktest was null");
     assert(a.textContent == "YOU SHOULD NOT SEE THIS AT ALL", "linktest link couldn't be found"); // changed text when fixing http://dbaron.org/mozilla/visited-privacy
+
+    //在test48中有一个异步操作  就是 iframe onload事件把a标签的class属性给去掉了
     if (a.hasAttribute('class'))
       return "retry"; // linktest onload didn't fire -- could be a networking issue, check that first
     assert(!(kungFuDeathGrip == null), "kungFuDeathGrip was null");
@@ -3844,7 +3859,7 @@ function update() {
         // some tests uses this magical mechanism to wait for support files to load
         // we will give this test 500 attempts (5000ms) before aborting
         retry += 1;
-        if (retry < 500) {
+        if (retry < 5) {   //原先这里是重复500次  当返回retry就是再试一次
           setTimeout(update, delay);
           return;
         }
